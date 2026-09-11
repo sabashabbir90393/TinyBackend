@@ -1,15 +1,23 @@
 import mongoose from "mongoose";
 
-const URLSchema = mongoose.Schema({
-    shortId: {
-        type: String,
-        required: true,
-        unique: true
-    },  
-    longUrl: {
-        type: String,
-        required: true,
-    },
+const urlSchema = new mongoose.Schema({
+  longUrl: {
+    type: String,
+    required: true,
+  },
+  shortId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  clicks: {
+    type: Number,
+    default: 0,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-export const  URLs = mongoose.model("urls", URLSchema);
+export const URLs = mongoose.model("URLs", urlSchema);

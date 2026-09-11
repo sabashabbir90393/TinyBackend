@@ -1,32 +1,39 @@
 import { URLs } from "../Models/url.js";
-import  { generateShortId }  from "../Utils/Keys.js";
+import { generateShortId } from "../Utils/Keys.js";
 
-export const SaveURL = async (req, res) =>{
-const { longUrl } = req.body;
-try{
+export const SaveURL = async (req, res) => {
+  try {
+    let { longUrl } = req.body;
 
-const shortId = generateShortId(7);
-const newURL = new URLs({longUrl: longUrl, shortId: shortId});
-await newURL.save();
+    if (!longUrl) {
+      return res.status(400).json({ ok: false, err: "URL is required" });
+    }
 
-/* const shortURL = `http://localhost:5050/${shortId}`; */
-// Protocol aur Host dynamically get karein taake Railway domain auto-detect ho jaye
+    // Clean quotes, spaces and leading slashes
+    longUrl = longUrl.trim().replace(/^"|"$/g, '');
+
+    if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
+      longUrl = "https://" + longUrl;
+    }
+
+    const shortId = generateShortId(7);
+    const newURL = new URLs({ longUrl: longUrl, shortId: shortId });
+    await newURL.save();
+
+    // Railway dynamic domain generation
     const host = req.get("host");
     const protocol = req.protocol;
     const shortURL = `${protocol}://${host}/${shortId}`;
-res.status(200).json({
 
-
-    ok: true,
-    shortURL: shortURL,
+    return res.status(200).json({
+      ok: true,
+      shortURL: shortURL,
     });
-
-}catch(err){
-console.log(err);
-res.status(500).json({
-        ok: false,
-        err: err,
-
+  } catch (err) {
+    console.error("SaveURL Error:", err);
+    return res.status(500).json({
+      ok: false,
+      err: err.message || "Failed to shorten URL",
     });
-}
+  }
 };
