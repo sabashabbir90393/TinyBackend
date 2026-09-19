@@ -11,6 +11,7 @@ export const SaveURL = async (req, res) => {
 
     // Clean quotes, spaces and leading slashes
     longUrl = longUrl.trim().replace(/^"|"$/g, '');
+    //URL normalization for protocols
 
     if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
       longUrl = "https://" + longUrl;
@@ -36,4 +37,4 @@ export const SaveURL = async (req, res) => {
       err: err.message || "Failed to shorten URL",
     });
   }
-};
+}; 
